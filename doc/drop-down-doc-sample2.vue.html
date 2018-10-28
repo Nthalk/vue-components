@@ -1,0 +1,20 @@
+<div>
+  <drop-down :items="items" ref="drop">
+    <a slot-scope="item">
+      <i class="mdi" :class="item.item.icon"></i>
+      {{item.item.text}}
+    </a>
+  </drop-down>
+</div>
+<script>
+  importVueComponent('drop-down');
+  window['drop-down-doc-sample2'] = {
+    data: function () {
+      return {
+        items: [
+          {text: "Heyo", icon: 'mdi-cloud-outline'}
+        ]
+      }
+    }
+  }
+</script>

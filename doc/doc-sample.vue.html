@@ -1,0 +1,64 @@
+<style>
+  .doc-sample {
+    display: grid;
+    grid-template-columns: auto;
+  }
+
+</style>
+<div class="doc-sample">
+  <tabs style="">
+    <tab label="Example">
+      <div class="mui-panel">
+        <slot></slot>
+      </div>
+    </tab>
+  </tabs>
+  <tabs style="">
+    <tab label="Template" v-if="template">
+      <div class="mui-panel">
+        <code-snippet :code="template"></code-snippet>
+      </div>
+    </tab>
+    <tab label="Script" v-if="script">
+      <div class="mui-panel">
+        <code-snippet :code="script"></code-snippet>
+      </div>
+    </tab>
+    <tab label="Style" v-if="style">
+      <div class="mui-panel">
+        <code-snippet :code="style"></code-snippet>
+      </div>
+    </tab>
+  </tabs>
+</div>
+<script>
+  importVueComponent("tabs");
+  importVueComponent("tab");
+  importVueComponent("code-snippet");
+  window['doc-sample'] = {
+    mounted: function () {
+      importVueComponent.onceLoaded(function () {
+        this.componentName = this.$slots.default[0].componentOptions.tag;
+      }.bind(this));
+    },
+    data: function () {
+      return {
+        componentName: ''
+      }
+    },
+    computed: {
+      component: function () {
+        return componentCache[this.componentName] || {}
+      },
+      style: function () {
+        return this.component.style;
+      },
+      template: function () {
+        return this.component.template;
+      },
+      script: function () {
+        return this.component.script;
+      },
+    }
+  }
+</script>

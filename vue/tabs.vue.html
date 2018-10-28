@@ -1,0 +1,39 @@
+<div class="tabs">
+  <ul class="mui-tabs__bar">
+    <li v-for="tab in tabs"
+        class="tab-label"
+        :key="tab.label"
+        ref="tabs"
+        :class="{'mui--is-active': activeTab === tab}"
+        style="cursor:pointer"
+        @click.stop="active = tab.label">
+      <a>{{tab.label}}</a>
+    </li>
+  </ul>
+  <div class="mui-tabs__pane mui--is-active" style="padding-top:10px">
+    <slot></slot>
+  </div>
+</div>
+<script>
+  window['tabs'] = {
+    data: function () {
+      return {
+        active: null,
+        tabs: []
+      }
+    },
+    computed: {
+      activeTab: function () {
+        for (var i = 0; i < this.tabs.length; i++) {
+          var child = this.tabs[i];
+          if (this.active === null) {
+            return child;
+          }
+          if (child.label === this.active) {
+            return child;
+          }
+        }
+      }
+    }
+  }
+</script>

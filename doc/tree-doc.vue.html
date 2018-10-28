@@ -1,0 +1,53 @@
+<style>
+  .tree-doc .mui-panel > h2 {
+    margin-top: 0;
+    border-bottom: 1px solid black;
+  }
+</style>
+<div class="tree-doc">
+  <h1>Tree</h1>
+  <p>
+    The <code>&lang;tree :items="items"&rang;</code>
+    component takes a list of items that may or may not have children and has
+    a renderer that will inject the children into the end of the parent's template.
+  </p>
+
+  <div class="mui-panel">
+    <h2>Api</h2>
+    <doc-component-api :api="api"></doc-component-api>
+  </div>
+
+  <div class="mui-panel">
+    <h2>Samples</h2>
+    <doc-sample>
+      <tree-doc-sample1></tree-doc-sample1>
+    </doc-sample>
+  </div>
+</div>
+<script>
+  importVueComponent("doc-sample", "../doc/doc-sample");
+  importVueComponent("doc-component-api", "../doc/doc-component-api");
+  importVueComponent("tree-doc-sample1", '../doc/tree-doc-sample1');
+  window['tree-doc'] = {
+    data: function () {
+      return {
+        root: {},
+        api: {
+          props: tree.props,
+          slots: {
+            'item, depth': {
+              required: true,
+              type: "(T, number)",
+              about: "Template slot, where item, and depth of the tree node",
+              example: "<div class=\"tree-item\" :style=\"{paddingLeft: (1+depth) * 10}\">\n"
+                  + "          {{item.text}}\n"
+                  + "        </div>",
+              default: "{{item.label}}"
+            }
+          },
+          events: {}
+        }
+      }
+    }
+  };
+</script>

@@ -1,0 +1,25 @@
+<div>
+  <h1>Drop Down</h1>
+  <p>
+
+  </p>
+  <div class="mui-panel">
+    <h2>Samples</h2>
+    <h3>Drop Down with templated items</h3>
+    <doc-sample>
+      <drop-down-doc-sample1></drop-down-doc-sample1>
+    </doc-sample>
+
+    <h3>Drop Down with data items</h3>
+    <doc-sample>
+      <drop-down-doc-sample2></drop-down-doc-sample2>
+    </doc-sample>
+  </div>
+</div>
+<script>
+  importVueComponent("doc-sample", "../doc/doc-sample");
+  importVueComponent("doc-component-api", "../doc/doc-component-api");
+  importVueComponent("drop-down-doc-sample1", '../doc/drop-down-doc-sample1');
+  importVueComponent("drop-down-doc-sample2", '../doc/drop-down-doc-sample2');
+  window['drop-down-doc'] = {}
+</script>

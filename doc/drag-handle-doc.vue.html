@@ -1,0 +1,56 @@
+<style>
+  .drag-doc .mui-panel > h2 {
+    margin-top: 0;
+    border-bottom: 1px solid black;
+  }
+</style>
+<div class="drag-doc">
+  <h1>Drag Handle</h1>
+
+  <p>
+    <code>&lang;drag-handle @drag="function(deltaX, deltaY){}"&rang;</code>
+    Is a component that renders it's slot and tracks mouse drag gestures.
+  </p>
+
+  <div class="mui-panel">
+    <h2>Api</h2>
+    <doc-component-api :api="api"></doc-component-api>
+  </div>
+
+  <div class="mui-panel">
+    <h2>Samples</h2>
+    <doc-sample>
+      <drag-handle-doc-sample1></drag-handle-doc-sample1>
+    </doc-sample>
+  </div>
+</div>
+<script>
+  importVueComponent("doc-sample", "../doc/doc-sample");
+  importVueComponent("doc-component-api", "../doc/doc-component-api");
+  importVueComponent("drag-handle-doc-sample1", "../doc/drag-handle-doc-sample1");
+  window['drag-handle-doc'] = {
+    data: function () {
+      return {
+        root: {},
+        api: {
+          props: tree.props,
+          events: {
+            '@drag': {
+              type: "{deltaX: Number, deltaY: Number}",
+              about: "This event is fired when the user drags beyond the handle beyond the threshold",
+              example: "handleX += $event.deltaX; handleY += $event.deltaY"
+            }
+          },
+          slots: {
+            default: {
+              required: true,
+              about: "The content that should render within the drag handle",
+              example: "<i class=\"mdi mdi-move-resize\" style=\"font-size:40px\"></i>",
+              default: "{{item.label}}"
+            }
+          }
+        }
+      }
+    }
+  };
+</script>

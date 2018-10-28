@@ -1,0 +1,11 @@
+<div>
+  <drop-down ref="drop">
+    <li><a href="#" @click="$refs.drop.select('option1')">Option 1</a></li>
+    <li><a href="#" @click="$refs.drop.select('option2')">Option 2</a></li>
+    <li><a href="#">Option 3 (will not close)</a></li>
+  </drop-down>
+</div>
+<script>
+  importVueComponent('drop-down');
+  window['drop-down-doc-sample1'] = {}
+</script>

@@ -1,0 +1,65 @@
+<div class="tree">
+  <tree-item v-for="item in children" :key="keyFor(item)" :item="item">
+    <template slot-scope="item">
+      <slot v-bind="item">
+        <div class="tree-item" :style="{paddingLeft: (1+depth) * 10}">
+          {{item.text}}
+        </div>
+      </slot>
+    </template>
+  </tree-item>
+</div>
+<script>
+  Vue.component('tree-item', {
+    functional: true,
+    render: function (h, ctx) {
+      var childrenFor = ctx.parent.childrenFor;
+      var keyFor = ctx.parent.keyFor;
+      var item = ctx.props.item;
+      var children = childrenFor(item);
+      var template = ctx.parent.$scopedSlots.default;
+      var rendered = template(item, ctx.props.depth);
+      var injected = rendered[rendered.length - 1];
+      var injectTarget = injected.children ? injected.children : rendered;
+
+      if (children) {
+        var nextDepth = ctx.props.depth + 1;
+        for (var i = 0; i < children.length; i++) {
+          injectTarget.push(h('tree-item', {
+            props: {item: children[i], depth: nextDepth},
+            key: keyFor(children[i]),
+            scopedSlots: {default: template}
+          }));
+        }
+      }
+      return h('div', {class: 'tree-item', key: ctx.data.key}, rendered)
+    },
+    props: {
+      item: Object,
+      depth: {
+        type: Number,
+        default: 0
+      }
+    }
+  });
+  window['tree'] = {
+    props: {
+      items: Array,
+      childrenFor: {
+        type: Function, default: function (item) {
+          return item ? item.children : [];
+        }
+      },
+      keyFor: {
+        type: Function, default: function (item) {
+          return item ? item.id : null;
+        }
+      }
+    },
+    computed: {
+      children: function () {
+        return this.items;
+      }
+    }
+  }
+</script>

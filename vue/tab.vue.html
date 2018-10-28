@@ -1,0 +1,13 @@
+<div :class="{active:$parent.activeTab == _self}">
+  <slot v-if="$parent.activeTab === _self"></slot>
+</div>
+<script>
+  window['tab'] = {
+    props: {
+      label: String
+    },
+    mounted: function () {
+      this.$parent.tabs.push(this);
+    }
+  }
+</script>

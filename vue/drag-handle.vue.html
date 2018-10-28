@@ -1,0 +1,56 @@
+<style>
+  .drag-handle {
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+</style>
+<div class="drag-handle"
+     @mousedown="start">
+  <slot></slot>
+</div>
+<script>
+  window['drag-handle'] = {
+    data: function () {
+      return {
+        initialX: null,
+        initialY: null,
+        dragThreshold: 10,
+        trackThresholdBreached: false,
+        mouseMoveHandler: null
+      }
+    },
+    methods: {
+      start: function ($event) {
+        this.lastX = $event.clientX;
+        this.lastY = $event.clientY;
+        this.trackThresholdBreached = false;
+        document.addEventListener("mousemove", this.mouseMoveHandler = function ($event) {
+          if (!this.trackThresholdBreached) {
+            var distance = Math.pow(Math.pow($event.clientX - this.lastX, 2) + Math.pow(
+                $event.clientY - this.lastY, 2), .5);
+            if (distance >= this.dragThreshold) {
+              this.trackThresholdBreached = true;
+            }
+          } else {
+            this.$emit("drag", {
+              deltaX: $event.clientX - this.lastX,
+              deltaY: $event.clientY - this.lastY
+            });
+            this.lastX = $event.clientX;
+            this.lastY = $event.clientY;
+          }
+        }.bind(this));
+        var removeMouseMoveHandler = function () {
+          document.removeEventListener("mouseup", removeMouseMoveHandler);
+          document.removeEventListener("mousemove", this.mouseMoveHandler);
+        }.bind(this)
+        document.addEventListener("mouseup", removeMouseMoveHandler);
+      }
+    }
+  }
+</script>

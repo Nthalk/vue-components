@@ -1,0 +1,55 @@
+<style>
+  .drag-handle-doc-sample1 {
+    width: 300px;
+  }
+
+  .drag-handle-doc-sample1 .panel {
+    background: darkolivegreen;
+    display: inline-block;
+    height: 50px;
+  }
+
+  .drag-handle-doc-sample1 .panel2 {
+    background: darkred;
+  }
+
+  .drag-handle-doc-sample1 .drag-handle {
+    display: inline-block;
+    position: relative;
+    top: -20px;
+    cursor: pointer;
+  }
+</style>
+<div class="drag-handle-doc-sample1">
+  <div class="panel panel1" :style="{width: dragWidth}"></div>
+  <drag-handle @drag="onDrag">
+    <i class="mdi mdi-cursor-move"></i>
+  </drag-handle>
+  <div class="panel panel2" :style="{width:200 - dragWidth, left: dragWidth}"></div>
+  <div>
+    <div v-for="dragEvent in dragEvents">
+      DeltaX: {{dragEvent.deltaX}} DeltaY: {{dragEvent.deltaY}}
+    </div>
+  </div>
+</div>
+<script>
+  importVueComponent("drag-handle");
+  window['drag-handle-doc-sample1'] = {
+    data: function () {
+      return {
+        dragWidth: 100,
+        dragEvents: []
+      }
+    },
+    methods: {
+      onDrag: function (delta) {
+        if (this.dragEvents.length > 5) {
+          this.dragEvents.shift();
+        }
+        this.dragEvents.push(delta);
+        this.dragWidth += delta.deltaX
+      }
+
+    }
+  }
+</script>

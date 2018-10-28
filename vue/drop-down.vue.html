@@ -1,0 +1,37 @@
+<div class="mui-dropdown">
+  <button class="mui-btn mui-btn--primary" @click="open = !open">
+    Dropdown
+    <span class="mui-caret"></span>
+  </button>
+  <ul class="mui-dropdown__menu" :class="{'mui--is-open':open}">
+    <slot v-if="$slots.default"></slot>
+    <li v-else
+        v-for="item in items"
+        @click="select(item)">
+      <slot v-bind:item="item">
+        <a>{{item}}</a>
+      </slot>
+    </li>
+  </ul>
+</div>
+<script>
+  window['drop-down'] = {
+    props: {
+      items: Array
+    },
+    data: function () {
+      return {
+        open: false
+      }
+    },
+    methods: {
+      select: function (item) {
+        this.$emit('select', item);
+        this.close();
+      },
+      close: function () {
+        this.open = false;
+      }
+    }
+  }
+</script>

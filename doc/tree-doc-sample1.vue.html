@@ -1,0 +1,35 @@
+<tree :items="items">
+  <template slot-scope="item, depth">
+    <div :style="{paddingLeft: (1+depth) * 10}">
+      {{item.label}}
+    </div>
+  </template>
+</tree>
+<script>
+  importVueComponent('tree');
+  window['tree-doc-sample1'] = {
+    data: function () {
+      return {
+        items: [{
+          label: "Mammals",
+          children: [{
+            label: 'Lion'
+          }, {
+            label: 'Tiger'
+          }, {
+            label: 'Bear'
+          }]
+        }, {
+          label: "Fruit",
+          children: [{
+            label: 'Apple'
+          }, {
+            label: 'Orange'
+          }, {
+            label: ''
+          }]
+        }]
+      }
+    }
+  }
+</script>

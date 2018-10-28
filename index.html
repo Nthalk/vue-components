@@ -1,0 +1,268 @@
+<html>
+<head>
+  <script>
+    !window.fetch && document.writeln(
+        '<script src=\'vendor/fetch/2.0.3/fetch.min.js\'></' +
+        'script>');
+    !window.Promise && document.writeln(
+        '<script src=\'vendor/native-promise-only/0.8.1/npo.js\'></' +
+        'script>');
+  </script>
+  <link type="text/css" rel="stylesheet" href="vendor/mui/0.9.39/mui.min.css"/>
+  <link type="text/css" rel="stylesheet"
+        href="vendor/materialdesign-webfont/2.6.95/css/materialdesignicons.min.css"/>
+  <script src='vendor/vuejs/2.5.17/vue.js'></script>
+  <script src='vendor/vue-router/3.0.1/vue-router.js'></script>
+  <script src="vendor/import-vue-component/1.1.6/import-vue-component.js"></script>
+  <style>
+    .app-content {
+      position: absolute;
+      top: 36px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .nav-tree {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      padding-top: 10px;
+      background: #ebebeb;
+    }
+
+    .nav-drag {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 13px;
+      background: #e2e3ee;
+    }
+
+    .nav-drag i {
+      position: relative;
+      top: 40%;
+    }
+
+    .content {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      overflow: auto;
+      padding-left: 10px;
+    }
+
+    .doc-item {
+      border-left: 3px solid #eaeaea;
+      padding-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    .app-bar {
+      height: 36px;
+      background: #303030;
+      color: white;
+      padding-left: 10px;
+    }
+
+    .app-bar a:hover, .app-bar a:visited {
+      text-decoration: none;
+    }
+
+    .app-bar a {
+      font-size: 26px;
+      line-height: 36px;
+      color: #d5d5d5;
+    }
+
+    .nav-tree {
+      padding-left: 10px;
+      padding-right: 20px;
+    }
+
+    a.drawer_item {
+      color: black;
+      text-decoration: none;
+    }
+
+    .drawer_item {
+      font-size: 16px;
+      border-radius: 4px;
+      padding: 5px;
+      display: block;
+    }
+
+    .drawer_item:hover {
+      background: lightblue;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="app-bar">
+    <a href="#/">Vue Components</a>
+  </div>
+  <div class="app-content">
+    <tree class="nav-tree"
+          :style="{width: navBarWidth}"
+          :items="navChildren(nav)"
+          :children-for="navChildren"
+          :key-for="navId">
+      <template slot-scope="item, depth">
+        <router-link v-if="item.uri"
+                     class="drawer_item"
+                     :style="{paddingLeft:(depth * 10) + 5}"
+                     :to="item.uri">
+          <i class="mdi drawer_item_icon" :class="item.icon"></i>
+          <span class="drawer_item_text">
+                {{item.text}}
+              </span>
+        </router-link>
+        <div v-else
+             class="drawer_item"
+             :style="{paddingLeft:(depth * 10) + 5}">
+          <i class="mdi drawer_item_icon" :class="item.icon"></i>
+          <span class="drawer_item_text">{{item.text}}</span>
+        </div>
+        <div></div>
+      </template>
+    </tree>
+    <div class="content"
+         :style="{left: navBarWidth + 25}">
+      <router-view></router-view>
+    </div>
+    <drag-handle
+        class="nav-drag"
+        :style="{left: navBarWidth + 15}"
+        @drag="navBarWidth += $event.deltaX">
+      <i class="mdi mdi-drag-vertical"></i>
+    </drag-handle>
+  </div>
+</div>
+<script>
+  var componentCache = {};
+  importVueComponent.transformScript = function (s, c) {
+    if (!componentCache[c]) {
+      Vue.set(componentCache, c, {});
+    }
+    Vue.set(componentCache[c], 'script', s);
+    return s;
+  };
+  importVueComponent.transformStyle = function (s, c) {
+    if (!componentCache[c]) {
+      Vue.set(componentCache, c, {});
+    }
+    Vue.set(componentCache[c], 'style', s.innerText);
+    return s;
+  };
+  importVueComponent.transformTemplate = function (s, c) {
+    if (!componentCache[c]) {
+      Vue.set(componentCache, c, {});
+    }
+    Vue.set(componentCache[c], 'template', s);
+    return s;
+  };
+
+  importVueComponent('tree');
+  importVueComponent('drag-handle');
+
+  var components = {
+    'mdi-information-variant About': 'about',
+    'mdi-language-css3 Style': 'css',
+    'mdi-image-outline Icons': 'icons',
+    'mdi-square-edit-outline Inputs': null,
+    'mdi-arrow-decision-auto-outline Inputs/Auto Complete': 'auto-complete',
+    'UI Patterns': null,
+    'mdi-arrow-down-drop-circle-outline UI Patterns/Drop Down': 'drop-down',
+    'mdi-file-tree UI Patterns/Tree': 'tree',
+    'mdi-drag UI Patterns/Drag Handle': "drag-handle"
+  };
+  var routes = [];
+  var nav = {};
+  var rootDoc = "";
+  var docPaths = Object.keys(components);
+  for (var i = 0; i < docPaths.length; i++) {
+    var docPath = docPaths[i];
+    var componentEl = components[docPath];
+    var icon = null;
+    if (docPath.substring(0, 4) == "mdi-") {
+      var parts = docPath.split(' ');
+      icon = parts.shift();
+      docPath = parts.join(' ');
+    }
+
+    if (componentEl) {
+      rootDoc += "<" + componentEl + "-doc class='doc-item'>" + "</" + componentEl + "-doc>\n";
+      routes.push({
+        path: '/' + componentEl,
+        component: importVueComponent(componentEl + "-doc", "../doc/" + componentEl + "-doc")
+      });
+    }
+
+    if (docPath) {
+      var navPath = docPath.split('/');
+      var navCurrent = nav;
+      var currentPath = '';
+      for (var j = 0; j < navPath.length; j++) {
+        var navPathSegment = navPath[j];
+        currentPath += '/' + navPathSegment;
+        if (!navCurrent[navPathSegment]) {
+          navCurrent = navCurrent[navPathSegment] = {
+            text: navPathSegment,
+            icon: icon,
+            collapsed: false,
+            id: currentPath
+          };
+        } else {
+          navCurrent = navCurrent[navPathSegment];
+        }
+      }
+      navCurrent.uri = componentEl;
+    } else {
+      nav[componentEl] = {text: componentEl, collapsed: false, id: componentEl}
+    }
+  }
+
+  routes.push({
+    path: "/",
+    component: {template: '<div>' + rootDoc + '</div>'}
+  });
+
+  var docs = new Vue({
+    el: "#app",
+    router: new VueRouter({
+      routes: routes
+    }),
+    data: {
+      nav: nav,
+      navBarWidth: 150
+    },
+    methods: {
+      navChildren: function (nav) {
+        var children = [];
+        if (nav.collapsed) {
+          return children;
+        }
+        var keys = Object.keys(nav);
+        for (var i = 0; i < keys.length; i++) {
+          var key = keys[i];
+          if (key != 'id'
+              && key != 'icon'
+              && key != 'text'
+              && key != 'collapsed'
+              && key != 'uri') {
+            children.push(nav[key]);
+          }
+        }
+        return children;
+      },
+      navId: function (nav) {
+        return nav.id;
+      }
+    }
+  })
+</script>
+</body>
+</html>

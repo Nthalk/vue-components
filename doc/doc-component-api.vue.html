@@ -1,0 +1,149 @@
+<div class="doc-component-api">
+  <tabs>
+    <tab label="Props" v-if="props.length > 0">
+      <table class="mui-table mui-table--bordered">
+        <tr>
+          <th>Name</th>
+          <th>About</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr v-for="prop in props">
+          <td>{{prop.name}}</td>
+          <td>{{prop.about}}</td>
+          <td>{{prop.type}}</td>
+          <td>{{prop.default}}</td>
+          <td>{{prop.example}}</td>
+        </tr>
+      </table>
+    </tab>
+    <tab label="Events" v-if="events.length > 0">
+      <table class="mui-table mui-table--bordered">
+        <tr>
+          <th>Name</th>
+          <th>About</th>
+          <th>Arguments</th>
+          <th>Example</th>
+        </tr>
+        <tr v-for="event in events">
+          <td>{{event.name}}</td>
+          <td>{{event.about}}</td>
+          <td>{{event.type}}</td>
+          <td>{{event.example}}</td>
+        </tr>
+      </table>
+    </tab>
+    <tab label="Slots" v-if="slots.length > 0">
+      <table class="mui-table mui-table--bordered">
+        <tr>
+          <th>Name</th>
+          <th>About</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr v-for="slot in slots">
+          <td>
+            {{slot.name}}<span v-if="slot.required">*</span>:
+            {{slot.type}}
+          </td>
+          <td>{{slot.about}}</td>
+          <td>
+            <pre>{{slot.default}}</pre>
+          </td>
+          <td>
+            <code-snippet :code="slot.example"></code-snippet>
+          </td>
+        </tr>
+      </table>
+    </tab>
+  </tabs>
+
+</div>
+<script>
+  importVueComponent("tabs");
+  importVueComponent("tab");
+  importVueComponent("code-snippet");
+  window['doc-component-api'] = {
+    props: {
+      api: Object
+    },
+    computed: {
+      props: function () {
+        var props = [];
+        if (!this.api.props) {
+          return props;
+        }
+        var keys = Object.keys(this.api.props);
+        for (var i = 0; i < keys.length; i++) {
+          var name = keys[i];
+          var definition = this.api.props[name];
+          var type = definition;
+          if (type.type) {
+            type = type.type;
+          }
+          if (type === Function) {
+            type = 'function'
+          } else if (type === Object) {
+            type = 'object'
+          } else if (type === Number) {
+            type = 'number';
+          } else if (type === Array) {
+            type = 'array';
+          } else if (type === Boolean) {
+            type = 'boolean';
+          } else if (type === String) {
+            type = 'string';
+          }
+
+          var def = null;
+          if (definition.default) {
+            if (definition.default instanceof Function) {
+              def = definition.default.toString();
+            } else {
+              def = JSON.stringify(definition.default);
+            }
+          }
+
+          props.push({
+            name: name,
+            type: type,
+            default: def
+          })
+        }
+        return props;
+      },
+      events: function () {
+        var events = [];
+        if (this.api.events) {
+          var eventNames = Object.keys(this.api.events);
+          for (var i = 0; i < eventNames.length; i++) {
+            var eventData = this.api.events[eventNames[i]];
+            events.push({
+              name: eventNames[i],
+              about: eventData.about,
+              type: eventData.type,
+              example: eventData.example
+            })
+          }
+        }
+        return events;
+      },
+      slots: function () {
+        var slots = [];
+        if (!this.api.slots) {
+          return slots;
+        }
+        var slotNames = Object.keys(this.api.slots);
+        for (var i = 0; i < slotNames.length; i++) {
+          var slotName = slotNames[i];
+          var slot = this.api.slots[slotName];
+          slot.name = slotName;
+          slots.push(slot);
+        }
+        return slots;
+      },
+
+    }
+  }
+</script>
